@@ -94,3 +94,26 @@ export const loginStudent = async (req, res) => {
     });
   }
 };
+
+// ================= UPLOAD IMAGE =================
+export const uploadStudentImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    const imageUrl = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
+
+    await Student.findByIdAndUpdate(req.studentId, {
+      imageUrl,
+    });
+
+    res.json({
+      success: true,
+      imageUrl,
+    });
+  } catch (error) {
+    console.error("IMAGE UPLOAD ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
