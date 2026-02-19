@@ -98,22 +98,29 @@ export const loginStudent = async (req, res) => {
 // ================= UPLOAD IMAGE =================
 export const uploadStudentImage = async (req, res) => {
   try {
+    console.log("📸 UPLOAD IMAGE HIT");
+
+    console.log("FILE:", req.file);
+    console.log("USER:", req.user);
+
     if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
+      return res.status(400).json({
+        success: false,
+        message: "No file received",
+      });
     }
 
-    const imageUrl = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
+    const imageUrl = `http://${req.headers.host}/uploads/${req.file.filename}`;
 
-    await Student.findByIdAndUpdate(req.studentId, {
-      imageUrl,
-    });
-
-    res.json({
+    return res.status(200).json({
       success: true,
       imageUrl,
     });
-  } catch (error) {
-    console.error("IMAGE UPLOAD ERROR:", error);
-    res.status(500).json({ message: "Server error" });
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Upload failed",
+    });
   }
 };
