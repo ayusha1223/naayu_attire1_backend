@@ -1,14 +1,20 @@
-const Payment = require("../models/payment.model");
-const Order = require("../models/order.model");
+import Payment from "../models/payment.model.js";
+import Order from "../models/order.model.js";
 
-exports.processPayment = async (req, res) => {
+export const processPayment = async (req, res) => {
   try {
+    console.log("Payment body:", req.body);
+
     const { orderId, paymentMethod, transactionId } = req.body;
 
     const order = await Order.findById(orderId);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.paymentStatus === "paid") {
+      return res.status(400).json({ message: "Already paid" });
     }
 
     const payment = await Payment.create({
@@ -24,10 +30,12 @@ exports.processPayment = async (req, res) => {
     await order.save();
 
     res.status(200).json({
-      success: true,
+      message: "Payment successful",
       payment,
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+

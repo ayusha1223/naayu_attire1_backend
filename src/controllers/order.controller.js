@@ -1,20 +1,24 @@
-const Order = require("../models/order.model");
+import Order from "../models/order.model.js";
 
-exports.createOrder = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
-    const { items, totalAmount } = req.body;
+     console.log("🔥 ORDER ROUTE HIT 🔥");
+    console.log("Order body:", req.body);
+console.log("User:", req.user);
 
-    const newOrder = await Order.create({
+    const { items, totalAmount, paymentMethod } = req.body;
+
+    const order = await Order.create({
       userId: req.user.id,
       items,
       totalAmount,
+      paymentStatus: paymentMethod === "cod" ? "paid" : "pending",
     });
 
-    res.status(201).json({
-      success: true,
-      order: newOrder,
-    });
+    res.status(201).json(order);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
