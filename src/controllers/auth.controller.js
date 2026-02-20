@@ -1,17 +1,15 @@
-import Student from "../models/student.model.js";
+import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // ================= REGISTER =================
-export const registerStudent = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
-    console.log("🔥🔥 REGISTER API HIT FROM FLUTTER 🔥🔥");
-    console.log("REQUEST BODY:", req.body);
+    console.log("🔥 REGISTER API HIT");
 
     const { name, email, password } = req.body;
 
-    const exists = await Student.findOne({ email });
-    console.log("EMAIL EXISTS CHECK:", exists);
+    const exists = await User.findOne({ email });
 
     if (exists) {
       return res.status(400).json({
@@ -22,25 +20,23 @@ export const registerStudent = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const student = await Student.create({
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
     });
 
-    console.log("✅ STUDENT CREATED:", student);
-
     res.status(201).json({
       success: true,
-      message: "Student registered successfully",
+      message: "User registered successfully",
       data: {
-        id: student._id,
-        name: student.name,
-        email: student.email,
+        id: user._id,
+        name: user.name,
+        email: user.email,
       },
     });
   } catch (error) {
-    console.error("❌ REGISTER ERROR:", error);
+    console.error("REGISTER ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -49,21 +45,21 @@ export const registerStudent = async (req, res) => {
 };
 
 // ================= LOGIN =================
-export const loginStudent = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
-    console.log("🔥 LOGIN API HIT");
-
     const { email, password } = req.body;
 
-    const student = await Student.findOne({ email });
-    if (!student) {
+    const user = await User.findOne({ email });
+
+    if (!user) {
       return res.status(400).json({
         success: false,
         message: "Invalid email or password",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, student.password);
+    const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(400).json({
         success: false,
@@ -71,8 +67,9 @@ export const loginStudent = async (req, res) => {
       });
     }
 
+    // 🔥 IMPORTANT: INCLUDE ROLE IN TOKEN
     const token = jwt.sign(
-      { id: student._id },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -80,14 +77,15 @@ export const loginStudent = async (req, res) => {
     res.json({
       success: true,
       data: {
-        id: student._id,
-        name: student.name,
-        email: student.email,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
         token,
       },
     });
   } catch (error) {
-    console.error("❌ LOGIN ERROR:", error);
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -96,13 +94,8 @@ export const loginStudent = async (req, res) => {
 };
 
 // ================= UPLOAD IMAGE =================
-export const uploadStudentImage = async (req, res) => {
+export const uploadUserImage = async (req, res) => {
   try {
-    console.log("📸 UPLOAD IMAGE HIT");
-
-    console.log("FILE:", req.file);
-    console.log("USER:", req.user);
-
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -112,13 +105,13 @@ export const uploadStudentImage = async (req, res) => {
 
     const imageUrl = `http://${req.headers.host}/uploads/${req.file.filename}`;
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       imageUrl,
     });
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Upload failed",
     });

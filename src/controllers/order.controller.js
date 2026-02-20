@@ -1,15 +1,14 @@
 import Order from "../models/order.model.js";
 
+/// ===============================
+/// 🛒 CREATE ORDER
+/// ===============================
 export const createOrder = async (req, res) => {
   try {
-     console.log("🔥 ORDER ROUTE HIT 🔥");
-    console.log("Order body:", req.body);
-console.log("User:", req.user);
-
     const { items, totalAmount, paymentMethod } = req.body;
 
     const order = await Order.create({
-      userId: req.user.id,
+      userId: req.user._id, // ✅ FIXED
       items,
       totalAmount,
       paymentStatus: paymentMethod === "cod" ? "paid" : "pending",
@@ -22,3 +21,22 @@ console.log("User:", req.user);
   }
 };
 
+
+/// ===============================
+/// 📦 GET ALL ORDERS (ADMIN)
+/// ===============================
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("userId", "name email") // ✅ FIXED
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching orders",
+      error: error.message,
+    });
+  }
+};

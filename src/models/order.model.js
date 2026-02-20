@@ -4,9 +4,10 @@ const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: "User", // IMPORTANT
       required: true,
     },
+
     items: [
       {
         productId: String,
@@ -16,15 +17,18 @@ const orderSchema = new mongoose.Schema(
         image: String,
       },
     ],
+
     totalAmount: {
       type: Number,
       required: true,
     },
+
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],
       default: "pending",
     },
+
     orderStatus: {
       type: String,
       enum: ["processing", "shipped", "delivered"],
@@ -34,6 +38,4 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", orderSchema);
-
-export default Order;   // ✅ VERY IMPORTANT
+export default mongoose.model("Order", orderSchema);

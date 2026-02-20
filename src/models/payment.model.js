@@ -9,7 +9,7 @@ const paymentSchema = new mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: "User", // ✅ FIXED
       required: true,
     },
     amount: {

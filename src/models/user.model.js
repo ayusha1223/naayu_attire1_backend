@@ -1,26 +1,36 @@
 import mongoose from "mongoose";
 
-const studentSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
     },
+
     password: {
       type: String,
       required: true,
     },
+
     imageUrl: {
-  type: String,
-  default: null,
-},
+      type: String,
+      default: null,
+    },
+
+    // 🔥 IMPORTANT FOR ADMIN
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Student", studentSchema);
+export default mongoose.model("User", userSchema);

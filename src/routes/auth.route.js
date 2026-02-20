@@ -1,23 +1,27 @@
 import express from "express";
 import {
-  registerStudent,
-  loginStudent,
-  uploadStudentImage, // ✅ ADD THIS
-} from "../controllers/student.controller.js";
+  registerUser,
+  loginUser,
+  uploadUserImage,
+} from "../controllers/auth.controller.js";
 
 import upload from "../config/multer.js";
 import authMiddleware from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/register", registerStudent);
-router.post("/login", loginStudent);
+// Register
+router.post("/register", registerUser);
 
+// Login
+router.post("/login", loginUser);
+
+// Upload Profile Image
 router.post(
   "/upload-image",
   authMiddleware,
   upload.single("image"),
-  uploadStudentImage
+  uploadUserImage
 );
 
 export default router;

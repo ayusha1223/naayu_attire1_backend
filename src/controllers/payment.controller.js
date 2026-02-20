@@ -17,14 +17,14 @@ export const processPayment = async (req, res) => {
       return res.status(400).json({ message: "Already paid" });
     }
 
-    const payment = await Payment.create({
-      orderId,
-      userId: req.user.id,
-      amount: order.totalAmount,
-      paymentMethod,
-      transactionId,
-      status: "success",
-    });
+  const payment = await Payment.create({
+  orderId,
+  userId: req.user._id, 
+  amount: order.totalAmount,
+  paymentMethod,
+  transactionId,
+  status: "success",
+});
 
     order.paymentStatus = "paid";
     await order.save();
