@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   uploadUserImage,
+  updateProfile,
 } from "../controllers/auth.controller.js";
 
 import upload from "../config/multer.js";
@@ -23,5 +24,7 @@ router.post(
   upload.single("image"),
   uploadUserImage
 );
+// Update Profile
+router.put("/update-profile", authMiddleware, updateProfile);
 
 export default router;
