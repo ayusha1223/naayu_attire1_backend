@@ -167,7 +167,7 @@ export const getMonthlyRevenue = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("user", "name email")
+      .populate("userId", "name email")
       .sort({ createdAt: -1 });
 
     res.json(orders);

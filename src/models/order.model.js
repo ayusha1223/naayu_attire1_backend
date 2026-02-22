@@ -25,15 +25,24 @@ const orderSchema = new mongoose.Schema(
 
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
+    paymentMethod: {
+  type: String,
+  enum: ["card", "esewa", "cod", "paypal"],
+  required: true,
+},
 
     orderStatus: {
       type: String,
-      enum: ["processing", "shipped", "delivered"],
+      enum: ["processing", "shipped", "delivered", "cancelled"],
       default: "processing",
     },
+    refundRequested: {
+  type: Boolean,
+  default: false,
+},
   },
   { timestamps: true }
 );
