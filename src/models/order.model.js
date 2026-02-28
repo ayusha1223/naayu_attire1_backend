@@ -4,10 +4,30 @@ const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // IMPORTANT
+      ref: "User",
       required: true,
     },
 
+    // ✅ DELIVERY INFORMATION
+    customerName: {
+      type: String,
+      required: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+    },
+
+    address: {
+      type: String,
+      required: true,
+    },
     items: [
       {
         productId: String,
@@ -28,21 +48,23 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
+
     paymentMethod: {
-  type: String,
-  enum: ["card", "esewa", "cod", "paypal"],
-  required: true,
-},
+      type: String,
+      enum: ["esewa", "cod"], // ✅ remove card & paypal
+      required: true,
+    },
 
     orderStatus: {
       type: String,
       enum: ["processing", "shipped", "delivered", "cancelled"],
       default: "processing",
     },
+
     refundRequested: {
-  type: Boolean,
-  default: false,
-},
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

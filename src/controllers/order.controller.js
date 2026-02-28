@@ -1,11 +1,22 @@
 import Order from "../models/order.model.js";
-
+import Notification from "../models/notification.model.js";
+import { sendEmail } from "../utils/sendEmail.js";
 /// ===============================
 /// 🛒 CREATE ORDER
 /// ===============================
 export const createOrder = async (req, res) => {
   try {
-    const { items, totalAmount, paymentMethod } = req.body;
+   const {
+  items,
+  totalAmount,
+  paymentMethod,
+  customerName,
+  email,
+  phone,
+  address,
+  city,
+  postalCode,
+} = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: "No items in order" });
@@ -23,15 +34,22 @@ export const createOrder = async (req, res) => {
       image: item.image,
     }));
 
-    const order = await Order.create({
-      userId: req.user._id,
-      items: formattedItems,
-      totalAmount,
-      paymentMethod,
-      paymentStatus: paymentMethod === "cod" ? "paid" : "pending",
-      orderStatus: "processing",
-      refundRequested: false, // ✅ important
-    });
+   const order = await Order.create({
+  userId: req.user._id,
+
+  customerName,
+  email,
+  phone,
+  address,
+  city,
+  postalCode,
+
+  items: formattedItems,
+  totalAmount,
+  paymentMethod,
+  paymentStatus: paymentMethod === "cod" ? "paid" : "pending",
+  orderStatus: "processing",
+});
 
     res.status(201).json(order);
   } catch (error) {
@@ -54,36 +72,51 @@ export const updateOrderStatus = async (req, res) => {
     }
 
     const order = await Order.findById(id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
-    // ✅ Lock status if already cancelled or delivered
-    if (order.orderStatus === "cancelled") {
+    if (order.orderStatus === "cancelled")
       return res.status(400).json({ message: "Cancelled order cannot be updated" });
-    }
-    if (order.orderStatus === "delivered") {
+
+    if (order.orderStatus === "delivered")
       return res.status(400).json({ message: "Delivered order cannot be updated" });
-    }
-
-    // ✅ If user requested refund, admin should NOT ship/deliver
-    if (order.refundRequested === true && (status === "shipped" || status === "delivered")) {
-      return res.status(400).json({
-        message: "Refund requested. Please refund/cancel before shipping.",
-      });
-    }
-
-    // ✅ Optional: prevent admin from cancelling directly without refund
-    // If you want admin cancel WITHOUT refund, remove this block
-    if (status === "cancelled" && order.paymentStatus === "paid" && order.refundRequested !== true) {
-      return res.status(400).json({
-        message: "Paid order cannot be cancelled directly. Use refund action.",
-      });
-    }
 
     order.orderStatus = status;
     await order.save();
 
+    // 🔔 Status message
+    const messageMap = {
+      processing: "Your order is being processed.",
+      shipped: "Your order has been shipped 🚚",
+      delivered: "Your order has been delivered 🎉",
+      cancelled: "Your order has been cancelled ❌",
+    };
+
+    const message = messageMap[status];
+
+   console.log("ADMIN UPDATING ORDER");
+console.log("ORDER USER ID:", order.userId.toString());
+console.log("ADMIN USER ID:", req.user._id.toString());
+
+    // 🔔 Save notification
+    await Notification.create({
+      userId: order.userId,
+      orderId: order._id,
+      message,
+    });
+
+    // 📧 Send email
+    await sendEmail(
+      order.email,
+      "Order Status Updated",
+      `Hi ${order.customerName},\n\n${message}\n\nOrder ID: ${order._id}\n\nThank you for shopping with Naayu Attire ❤️`
+    );
+
     res.json({ message: "Order status updated", order });
+
   } catch (error) {
+    console.error("UPDATE STATUS ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -130,34 +163,68 @@ export const cancelOrder = async (req, res) => {
 /// ===============================
 /// 💸 REFUND ORDER (ADMIN)
 /// ===============================
+
 export const refundOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
     const order = await Order.findById(id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
     // ✅ Must be requested first
     if (order.refundRequested !== true) {
-      return res.status(400).json({ message: "No refund request found" });
+      return res.status(400).json({
+        message: "No refund request found",
+      });
     }
 
-    // ✅ Must be paid (refund means money back)
+    // ✅ Must be paid
     if (order.paymentStatus !== "paid") {
       return res.status(400).json({
         message: "Only PAID orders can be refunded",
       });
     }
 
-    // ✅ Process refund (demo)
+    // ✅ Process refund
     order.paymentStatus = "refunded";
     order.orderStatus = "cancelled";
     order.refundRequested = false;
 
     await order.save();
 
-    res.json({ message: "Refund approved and processed", order });
+    // 🔔 Create notification
+    const notificationMessage =
+      "Your refund has been approved and processed 💸";
+
+    await Notification.create({
+      userId: order.userId,
+      orderId: order._id,
+      message: notificationMessage,
+    });
+
+    // 📧 Send email
+    await sendEmail(
+      order.email,
+      "Refund Processed Successfully",
+      `Hi ${order.customerName},
+
+Your refund for Order ID ${order._id} has been successfully processed.
+
+Refund Amount: Rs. ${order.totalAmount}
+
+We’re sorry for the inconvenience.
+Thank you for shopping with Naayu Attire ❤️`
+    );
+
+    res.json({
+      message: "Refund approved and processed",
+      order,
+    });
+
   } catch (error) {
+    console.error("REFUND ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -179,3 +246,22 @@ export const getAllOrders = async (req, res) => {
     });
   }
 };
+
+
+/// ===============================
+/// 📄 GET ORDER BY ID
+/// ===============================
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
