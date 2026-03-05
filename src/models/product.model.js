@@ -10,6 +10,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isFlash: {
+  type: Boolean,
+  default: false,
+},
     description: {
       type: String,
     },
@@ -17,9 +21,14 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    oldPrice: {
-      type: Number,
-    },
+      oldPrice: {      // 👈 ADD THIS
+    type: Number,
+    default: null
+  },
+discountPercent: {
+  type: Number,
+  default: 0
+},
     rating: {
       type: Number,
       default: 4,
@@ -30,8 +39,23 @@ const productSchema = new mongoose.Schema(
       },
     ],
     color: {
-      type: String,
-    },
+  type: String,
+  required: true,
+  enum: [
+    "red",
+    "green",
+    "blue",
+    "black",
+    "white",
+    "pink",
+    "yellow",
+    "purple",
+    "maroon",
+    "cream",
+    "brown"
+  
+  ]
+},
     category: {
       type: String,
       required: true,
