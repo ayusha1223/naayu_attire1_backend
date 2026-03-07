@@ -17,7 +17,7 @@ jest.unstable_mockModule("../../models/user.model.js", () => ({
   },
 }));
 
-/* ---------------- IMPORT MIDDLEWARE ---------------- */
+/* ---------------- MIDDLEWARE ---------------- */
 
 const { default: authMiddleware } =
   await import("../../middleware/auth.middleware.js");

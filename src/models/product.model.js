@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-      oldPrice: {      // 👈 ADD THIS
+      oldPrice: {      
     type: Number,
     default: null
   },

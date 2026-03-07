@@ -9,10 +9,10 @@ import upload from "../config/multer.js";
 
 const router = express.Router();
 
-// 🔥 Create product WITH IMAGE
+// Create product WITH IMAGE
 router.post("/", upload.single("image"), createProduct);
 
-// 🔥 Get products
+// Get products
 router.get("/", getProducts);
 
 router.delete("/:id", deleteProduct);

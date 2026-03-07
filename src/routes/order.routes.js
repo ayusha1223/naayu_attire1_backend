@@ -12,13 +12,13 @@ import { adminMiddleware } from "../middleware/admin.middleware.js";
 
 const router = express.Router();
 
-// ✅ Create order
+// Create order
 router.post("/", authMiddleware, createOrder);
 
-// ✅ Cancel order (USER) -> refund request only
+// Cancel order (USER) -> refund request only
 router.put("/:id/cancel", authMiddleware, cancelOrder);
 
-// ✅ Get logged-in user's orders
+// Get logged-in user's orders
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const orders = await Order.find({
@@ -32,7 +32,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Admin get all orders (Optional - you already use /api/admin/orders)
+// Admin get all orders (Optional - you already use /api/admin/orders)
 router.get("/admin", authMiddleware, adminMiddleware, getAllOrders);
 
 export default router;

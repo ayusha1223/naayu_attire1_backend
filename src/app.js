@@ -27,12 +27,12 @@ app.use("/api/esewa", esewaRoutes);
 
 // Routes
 app.use("/api/v1/students", authRoutes);
-app.use("/api/v1/orders", orderRoutes);      // ✅ Added
+app.use("/api/v1/orders", orderRoutes);      
 app.use("/api/v1/payments", paymentRoutes);
-app.use("/api/v1/notifications", notificationRoutes);  // ✅ Added
+app.use("/api/v1/notifications", notificationRoutes);  
 app.use("/api/v1/products", productRoutes);
 
-// Health check
+
 app.get("/", (req, res) => {
   res.json({ message: "API Running Successfully 🚀" });
 });

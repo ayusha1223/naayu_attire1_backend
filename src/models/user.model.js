@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
 
-    // 🔥 IMPORTANT FOR ADMIN
+    
     role: {
       type: String,
       enum: ["user", "admin"],

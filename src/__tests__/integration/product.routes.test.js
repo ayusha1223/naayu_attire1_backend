@@ -14,7 +14,7 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
 
-  /// Create dummy image file for multer upload
+
   const testImagePath = path.join(process.cwd(), "test-image.jpg");
 
   if (!fs.existsSync(testImagePath)) {

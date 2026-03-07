@@ -1,7 +1,7 @@
 import Notification from "../models/notification.model.js";
 
 /// ===============================
-/// 🔔 GET USER NOTIFICATIONS
+///  GET USER NOTIFICATIONS
 /// ===============================
 export const getUserNotifications = async (req, res) => {
   try {
@@ -20,7 +20,7 @@ export const getUserNotifications = async (req, res) => {
 
 
 /// ===============================
-/// ✅ MARK AS READ
+///  MARK AS READ
 /// ===============================
 export const markNotificationAsRead = async (req, res) => {
   try {

@@ -4,7 +4,7 @@ import Payment from "../models/payment.model.js";
 import bcrypt from "bcryptjs";
 
 /// ===============================
-//// 📊 DASHBOARD STATS
+//// DASHBOARD STATS
 /// ===============================
 export const getDashboardStats = async (req, res) => {
   try {
@@ -33,7 +33,7 @@ export const getDashboardStats = async (req, res) => {
 
 
 /// ===============================
-//// 👥 GET ALL USERS (WITH STATS)
+//// GET ALL USERS (WITH STATS)
 /// ===============================
 export const getAllUsers = async (req, res) => {
   try {
@@ -42,15 +42,15 @@ export const getAllUsers = async (req, res) => {
     const usersWithStats = await Promise.all(
       users.map(async (user) => {
 
-        // ✅ Count Orders
+        // Count Orders
         const orderCount = await Order.countDocuments({
           userId: user._id
         });
 
-        // ✅ Get Successful Payments
+        //  Get Successful Payments
         const payments = await Payment.find({
-          userId: user._id,   // 🔥 FIXED (was user)
-          status: "success"   // 🔥 FIXED (was completed)
+          userId: user._id,  
+          status: "success"  
         });
 
         const totalSpent = payments.reduce(
@@ -76,7 +76,7 @@ export const getAllUsers = async (req, res) => {
   }
 };
 /// ===============================
-//// 👤 CREATE USER
+////  CREATE USER
 /// ===============================
 export const createUser = async (req, res) => {
   try {
@@ -99,7 +99,7 @@ export const createUser = async (req, res) => {
 
 
 /// ===============================
-//// ✏ UPDATE USER
+////  UPDATE USER
 /// ===============================
 export const updateUser = async (req, res) => {
   try {
@@ -117,7 +117,7 @@ export const updateUser = async (req, res) => {
 
 
 /// ===============================
-//// ❌ DELETE USER
+////  DELETE USER
 /// ===============================
 export const deleteUser = async (req, res) => {
   try {
@@ -162,7 +162,7 @@ export const getMonthlyRevenue = async (req, res) => {
   }
 };
 /// ===============================
-//// 📦 GET ALL ORDERS
+////  GET ALL ORDERS
 /// ===============================
 export const getAllOrders = async (req, res) => {
   try {
@@ -176,7 +176,7 @@ export const getAllOrders = async (req, res) => {
   }
 };
 /// ===============================
-/// 👤 GET ADMIN PROFILE
+///  GET ADMIN PROFILE
 /// ===============================
 export const getAdminProfile = async (req, res) => {
   try {

@@ -8,7 +8,7 @@ const router = express.Router();
 // ============================
 const MERCHANT_ID = "EPAYTEST";
 
-// For test environment, eSewa gives this secret key:
+
 const SECRET_KEY = "8gBm/:&EnhH.1/q"; // Test Secret (Official Test Key)
 
 // ============================
@@ -44,7 +44,7 @@ router.get("/failure", (req, res) => {
 
     const total_amount = Number(amount).toFixed(2);
 
-    // ===== SIGNATURE STRING FORMAT (IMPORTANT ORDER) =====
+    // ===== SIGNATURE STRING FORMAT=====
     const dataToSign =
       `total_amount=${total_amount},` +
       `transaction_uuid=${transaction_uuid},` +

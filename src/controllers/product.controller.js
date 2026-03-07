@@ -1,6 +1,6 @@
 import Product from "../models/product.model.js";
 
-// ✅ Create Product (Admin)
+
 export const createProduct = async (req, res) => {
   try {
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
@@ -27,7 +27,7 @@ export const createProduct = async (req, res) => {
     });
   }
 };
-// ✅ Delete Product
+
 export const deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -44,7 +44,7 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-// ✅ Update Product
+
 export const updateProduct = async (req, res) => {
   try {
     const {
@@ -68,7 +68,7 @@ export const updateProduct = async (req, res) => {
     product.category = category;
     product.color = color;
 
-    // 🔥 VERY IMPORTANT
+    
     product.oldPrice = oldPrice ?? null;
 
     await product.save();
@@ -86,24 +86,24 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// ✅ Get Products (User side)
+
 export const getProducts = async (req, res) => {
   try {
     const { category, search, isFlash } = req.query;
 
     let filter = {};
 
-    // Category filter
+   
     if (category) {
       filter.category = category;
     }
 
-    // Flash filter
+    
     if (isFlash !== undefined) {
       filter.isFlash = isFlash === "true";
     }
 
-    // Search filter
+    
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: "i" } },

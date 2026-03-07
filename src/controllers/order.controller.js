@@ -2,7 +2,7 @@ import Order from "../models/order.model.js";
 import Notification from "../models/notification.model.js";
 import { sendEmail } from "../utils/sendEmail.js";
 /// ===============================
-/// 🛒 CREATE ORDER
+/// CREATE ORDER
 /// ===============================
 export const createOrder = async (req, res) => {
   try {
@@ -59,7 +59,7 @@ export const createOrder = async (req, res) => {
 };
 
 /// ===============================
-/// 🛠 UPDATE ORDER STATUS (ADMIN)
+/// UPDATE ORDER STATUS (ADMIN)
 /// ===============================
 export const updateOrderStatus = async (req, res) => {
   try {
@@ -85,7 +85,7 @@ export const updateOrderStatus = async (req, res) => {
     order.orderStatus = status;
     await order.save();
 
-    // 🔔 Status message
+    //  Status message
     const messageMap = {
       processing: "Your order is being processed.",
       shipped: "Your order has been shipped 🚚",
@@ -99,14 +99,14 @@ export const updateOrderStatus = async (req, res) => {
 console.log("ORDER USER ID:", order.userId.toString());
 console.log("ADMIN USER ID:", req.user._id.toString());
 
-    // 🔔 Save notification
+    //  Save notification
     await Notification.create({
       userId: order.userId,
       orderId: order._id,
       message,
     });
 
-    // 📧 Send email
+    //  Send email
     await sendEmail(
       order.email,
       "Order Status Updated",
@@ -121,9 +121,6 @@ console.log("ADMIN USER ID:", req.user._id.toString());
   }
 };
 
-/// ===============================
-/// ❌ CANCEL ORDER (USER) = REFUND REQUEST
-/// ===============================
 export const cancelOrder = async (req, res) => {
   try {
     const { id } = req.params;
@@ -134,19 +131,19 @@ export const cancelOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // ✅ Only owner can request refund
+    // Only owner can request refund
     if (order.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not allowed" });
     }
 
-    // ✅ Only allow request while processing
+    // Only allow request while processing
     if (order.orderStatus !== "processing") {
       return res.status(400).json({
         message: "Order cannot be cancelled at the moment",
       });
     }
 
-    // ✅ If already requested, don’t duplicate
+    // If already requested, don’t duplicate
     if (order.refundRequested === true) {
       return res.status(400).json({ message: "Refund already requested" });
     }
@@ -160,9 +157,8 @@ export const cancelOrder = async (req, res) => {
   }
 };
 
-/// ===============================
-/// 💸 REFUND ORDER (ADMIN)
-/// ===============================
+/// REFUND ORDER (ADMIN)
+
 
 export const refundOrder = async (req, res) => {
   try {
@@ -173,28 +169,28 @@ export const refundOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // ✅ Must be requested first
+    // Must be requested first
     if (order.refundRequested !== true) {
       return res.status(400).json({
         message: "No refund request found",
       });
     }
 
-    // ✅ Must be paid
+    // Must be paid
     if (order.paymentStatus !== "paid") {
       return res.status(400).json({
         message: "Only PAID orders can be refunded",
       });
     }
 
-    // ✅ Process refund
+    // Process refund
     order.paymentStatus = "refunded";
     order.orderStatus = "cancelled";
     order.refundRequested = false;
 
     await order.save();
 
-    // 🔔 Create notification
+    // Create notification
     const notificationMessage =
       "Your refund has been approved and processed 💸";
 
@@ -204,7 +200,7 @@ export const refundOrder = async (req, res) => {
       message: notificationMessage,
     });
 
-    // 📧 Send email
+    // Send email
     await sendEmail(
       order.email,
       "Refund Processed Successfully",
@@ -230,7 +226,7 @@ Thank you for shopping with Naayu Attire ❤️`
 };
 
 /// ===============================
-/// 📦 GET ALL ORDERS (ADMIN)
+/// GET ALL ORDERS (ADMIN)
 /// ===============================
 export const getAllOrders = async (req, res) => {
   try {

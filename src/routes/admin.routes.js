@@ -21,28 +21,28 @@ import {
 
 const router = express.Router();
 
-// 🔐 Protect all admin routes
+//Protect all admin routes
 router.use(authMiddleware, adminMiddleware);
 
-// 📈 Revenue
+// Revenue
 router.get("/monthly-revenue", getMonthlyRevenue);
 
-// 📊 Dashboard + Profile
+// Dashboard + Profile
 router.get("/dashboard", getDashboardStats);
 router.get("/profile", getAdminProfile);
 
-// 👥 Users
+// Users
 router.get("/users", getAllUsers);
 router.post("/users", createUser);
 router.put("/users/:id", updateUser);
 router.delete("/users/:id", deleteUser);
 
-// 📦 Orders
+// Orders
 router.get("/orders", getAllOrders);
 router.put("/orders/:id/status", updateOrderStatus);
 router.put("/orders/:id/refund", refundOrder);
 
-// 💳 Payments
+//Payments
 router.get("/payments", getAllPayments);
 
 export default router;

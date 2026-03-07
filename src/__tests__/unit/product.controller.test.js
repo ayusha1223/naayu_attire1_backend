@@ -17,7 +17,7 @@ jest.unstable_mockModule("../../models/product.model.js", () => ({
   },
 }));
 
-/* ---------------- IMPORT CONTROLLER ---------------- */
+/* ----------------  CONTROLLER ---------------- */
 
 const {
   createProduct,
